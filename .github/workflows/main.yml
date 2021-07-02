@@ -25,15 +25,13 @@ jobs:
       - name: Install npm dependencies
         run: npm install
       - name: Run build task
-        run: npm run build --if-present
-      - name: Deploy to Server
-        uses: easingthemes/ssh-deploy@main
-        env:
-            SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-            ARGS: "-rltgoDzvO --delete"
-            SOURCE: ".next/"
-            REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-            REMOTE_USER: ${{ secrets.REMOTE_USER }}
-            REMOTE_PORT: "2233"
-            TARGET: "/home/michaelg/next.michael-garrison.com"
+        run: npm run build --if-present  
+      - name: Push to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          password: ${{ secrets.REMOTE_PASS }}
+          port: "2233"
+          script: cd /home/michaelg/next.michael-garrison.com && git pull
       
